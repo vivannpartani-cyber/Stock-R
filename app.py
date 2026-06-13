@@ -14,7 +14,7 @@ except ImportError:
     st.error("Please add 'supabase' to your requirements.txt file.")
 
 # --- 1. Page Config & CSS ---
-st.set_page_config(page_title="Stock-R", layout="centered", page_icon="❤️")
+st.set_page_config(page_title="Stock-R", layout="centered", page_icon="Stock-R.png")
 
 st.markdown("""
 <style>
