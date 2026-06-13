@@ -72,7 +72,7 @@ def add_favorite(ticker):
     if supabase:
         try:
             supabase.table("user_favorites").insert({"user_email": user_email, "ticker": ticker}).execute()
-            st.toast(f"Added {ticker} to Favorites! ⭐")
+            st.toast(f"Added {ticker} to Favorites!")
         except Exception:
             st.toast(f"{ticker} is already in your favorites.")
 
@@ -82,7 +82,7 @@ if st.sidebar.button("Logout", use_container_width=True):
     st.logout()
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### ⭐ Favorites")
+st.sidebar.markdown("### Favorites")
 if supabase:
     try:
         fav_data = supabase.table("user_favorites").select("ticker").eq("user_email", user_email).execute()
@@ -90,14 +90,14 @@ if supabase:
         if not unique_favs:
             st.sidebar.caption("No favorites saved yet.")
         for f in unique_favs:
-            if st.sidebar.button(f"⭐ {f}", key=f"side_fav_{f}", use_container_width=True):
+            if st.sidebar.button(f" {f}", key=f"side_fav_{f}", use_container_width=True):
                 st.session_state.ticker = f
                 st.rerun()
     except Exception as e:
         st.sidebar.error(f"Could not load favorites.")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### 🕒 Recent Searches")
+st.sidebar.markdown("### Recent Searches")
 if supabase:
     try:
         hist_data = supabase.table("search_history").select("ticker").eq("user_email", user_email).order('created_at', desc=True).limit(10).execute()
@@ -105,7 +105,7 @@ if supabase:
         if not unique_hist:
             st.sidebar.caption("No history yet.")
         for h in unique_hist:
-            if st.sidebar.button(f"🔍 {h}", key=f"side_hist_{h}", use_container_width=True):
+            if st.sidebar.button(f" {h}", key=f"side_hist_{h}", use_container_width=True):
                 st.session_state.ticker = h
                 st.rerun()
     except Exception as e:
