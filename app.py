@@ -104,7 +104,6 @@ def init_supabase():
     return None
 
 supabase = init_supabase()
-user_email = st.user.email
 
 # Handle user identity based on login vs guest status
 if st.session_state.is_guest:
