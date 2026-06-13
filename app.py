@@ -1,3 +1,5 @@
+import os
+os.environ["STREAMLIT_URL"] = "https://stock-r.streamlit.app"
 import streamlit as st
 import yfinance as yf
 from openai import OpenAI
