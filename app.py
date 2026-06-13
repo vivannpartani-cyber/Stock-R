@@ -12,7 +12,7 @@ except ImportError:
     st.error("Please add 'supabase' to your requirements.txt file.")
 
 # --- 1. Page Config & State Initialization ---
-st.set_page_config(page_title="Stock-R", layout="wide", page_icon="logo.png") # Switched to WIDE layout for the dashboard
+st.set_page_config(page_title="Stock-R", layout="wide", page_icon="Stock-R.png") # Switched to WIDE layout for the dashboard
 
 # Initialize our "Page Router" and data states
 if "page" not in st.session_state:
