@@ -1,5 +1,7 @@
-streamlit
+streamlit>=1.40.0
+authlib>=1.3.2
 yfinance
 openai
 newsapi-python
 plotly
+supabase
