@@ -241,11 +241,11 @@ if ticker_input:
         # Fixed Bull/Bear UI using Streamlit's native colored boxes
         col_bull, col_bear = st.columns(2)
         with col_bull:
-            st.success("### 🟢 The Bull Case")
+            st.success("### Pros")
             for point in res.get("bull_case", []): 
                 st.write(f"**✓** {point}")
         with col_bear:
-            st.error("### 🔴 The Bear Case")
+            st.error("### Cons")
             for point in res.get("bear_case", []): 
                 st.write(f"**✗** {point}")
 
