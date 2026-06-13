@@ -135,7 +135,7 @@ def add_favorite(ticker):
         st.error(f"Save failed: {e}")
 
 # --- 5. Sidebar Navigation ---
-st.sidebar.markdown(f"### 👤 {display_name}")
+st.sidebar.markdown(f"### {display_name}")
 
 # Smart Logout/Exit button
 if st.sidebar.button("Logout / Exit", use_container_width=True):
@@ -149,10 +149,10 @@ st.sidebar.markdown("---")
 
 # If they are a guest, show a promo to log in instead of empty DB queries
 if st.session_state.is_guest:
-    st.sidebar.info("🔒 **Log in with Google** to save your favorite assets and track your search history across devices.")
+    st.sidebar.info("**Log in with Google** to save your favorite assets and track your search history across devices.")
 else:
     # --- Real User Sidebar Logic ---
-    st.sidebar.markdown("### ⭐ Favorites")
+    st.sidebar.markdown("### Favorites")
     if supabase:
         try:
             response = supabase.table("user_favorites").select("ticker").eq("user_email", user_email).execute()
@@ -170,7 +170,7 @@ else:
             st.sidebar.error(f"DB Error: {e}")
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🕒 Recent Searches")
+    st.sidebar.markdown("### Recent Searches")
     if supabase:
         try:
             response = supabase.table("search_history").select("ticker").eq("user_email", user_email).execute()
@@ -315,7 +315,7 @@ elif st.session_state.page == "analysis":
     with top_cols[1]:
         st.markdown(f"<h3 style='text-align: center; margin-top: 0;'>Terminal: {ticker} ({timeframe})</h3>", unsafe_allow_html=True)
     with top_cols[2]:
-        if st.button("⭐ Save", use_container_width=True):
+        if st.button("Favorite", use_container_width=True):
             add_favorite(ticker)
             st.rerun()  # <--- THIS IS THE MISSING KEY
 
