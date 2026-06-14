@@ -14,7 +14,7 @@ except ImportError:
 
 # --- 1. Page Config & State Initialization ---
 
-st.set_page_config(page_title="Stock-R", layout="wide", page_icon="Stock-R.png") 
+st.set_page_config(page_title="Stock-R", layout="wide", page_icon="logo.png") 
 
 if "page" not in st.session_state: st.session_state.page = "home"
 if "ticker" not in st.session_state: st.session_state.ticker = ""
@@ -84,7 +84,7 @@ st.markdown("""
         animation: floatingClouds 25s ease infinite;
     }
     @keyframes floatingClouds { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .home-container { max-width: 850px; margin: 0 auto; padding-top: 5vh; }
+    .home-container { max-width: 850px; margin: 0 auto; padding-top: 1vh; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -254,16 +254,129 @@ def format_large_number(num):
 # --- 7A. VIEW: HOME PAGE ---
 # ==========================================
 if st.session_state.page == "home":
-    st.markdown("<div class='home-container'>", unsafe_allow_html=True)
     
+    # --- UI UPGRADE 1: Background & Ambient Candlestick Animations ---
     st.markdown("""
-    <div style="text-align: center; margin-bottom: 40px;">
-        <h1 style="font-weight: 900; font-size: 6rem; letter-spacing: -3px; margin-bottom: 0px;">
-            <span style="color: #3b82f6;">Sto</span><span style="color: var(--text-color);">ck-R</span>
-        </h1>
-        <p style="color: #64748b; font-size: 1.3rem; margin-top: -10px; font-weight: 500;">the world's best ai stock market predictor</p>
+    <style>
+        /* NUKE STREAMLIT'S DEFAULT TOP PADDING */
+        [data-testid="block-container"] {
+            padding-top: 0rem !important;
+        }
+
+        /* The Aurora Background */
+        [data-testid="stAppViewContainer"] {
+            background: linear-gradient(-45deg, #ffffff, #e0e7ff, #f3e8ff, #ffedd5);
+            background-size: 400% 400%;
+            animation: floatingClouds 25s ease infinite;
+        }
+        @keyframes floatingClouds { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        /* Reduced padding-top from 5vh to 1vh to pull everything up! */
+        .home-container { max-width: 850px; margin: 0 auto; padding-top: 1vh; position: relative; z-index: 10; }
+
+        /* The Ambient Floating Candlesticks */
+        .floating-stocks {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            pointer-events: none;
+            z-index: 1; 
+            overflow: hidden;
+        }
+        .candle {
+            position: absolute; bottom: -200px; 
+            width: 4px; 
+            height: 100px; 
+            border-radius: 2px; opacity: 0; animation: float-up linear infinite;
+        }
+        .candle::after {
+            content: ''; position: absolute; top: 25px; left: -6px;
+            width: 16px; 
+            height: 50px; 
+            border-radius: 4px;
+        }
+        .c-green { background: rgba(16, 185, 129, 0.4); }
+        .c-green::after { background: rgba(16, 185, 129, 0.6); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        
+        .c-red { background: rgba(239, 68, 68, 0.4); }
+        .c-red::after { background: rgba(239, 68, 68, 0.6); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+
+        @keyframes float-up {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            5% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+        }
+    </style>
+
+    <div class="floating-stocks">
+        <div class="candle c-green" style="left: 10%; animation-duration: 20s; animation-delay: 0s;"></div>
+        <div class="candle c-red" style="left: 30%; animation-duration: 25s; animation-delay: 3s;"></div>
+        <div class="candle c-green" style="left: 70%; animation-duration: 18s; animation-delay: 1s;"></div>
+        <div class="candle c-red" style="left: 85%; animation-duration: 28s; animation-delay: 6s;"></div>
+        <div class="candle c-green" style="left: 50%; animation-duration: 35s; animation-delay: 10s;"></div>
+        <div class="candle c-red" style="left: 20%; animation-duration: 22s; animation-delay: 12s;"></div>
     </div>
     """, unsafe_allow_html=True)
+
+    # --- UI UPGRADE 2: Bulletproof Static Title ---
+    st.markdown("""
+    <style>
+        .title-wrapper {
+            text-align: center;
+            margin-bottom: -10px; /* Reduced this slightly too so the glass panel moves up */
+            position: relative;
+            z-index: 10;
+        }
+        
+        .static-title {
+            font-weight: 900 !important;
+            font-size: 9vw !important; /* MASSIVE, edge-to-edge scaling */
+            letter-spacing: -10px !important;
+            margin: 0px !important;
+            display: inline-block !important;
+            line-height: 1.2 !important;
+            
+            background: linear-gradient(to right, #0f172a, #334155) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            color: transparent !important;
+        }
+        
+        .static-title .blue-text { 
+            background: linear-gradient(to right, #2563eb, #3b82f6) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            color: transparent !important;
+        }
+        
+        .sub-text { 
+            color: #64748b !important; 
+            font-size: 1.1rem !important; 
+            margin-top: -15px !important; 
+            font-weight: 700 !important; 
+            text-transform: uppercase !important; 
+            letter-spacing: 6px !important; 
+        }
+    </style>
+
+    <div class='home-container'>
+        <div class='title-wrapper'>
+            <h1 class="static-title"><span class="blue-text">Stock-</span>R</h1>
+            <p class="sub-text">The World's Best AI Market Predictor</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # ---------------------------------------------------------
+    # (Your with st.container(): glass panel code stays safely right below this!)
+    
+    # ---------------------------------------------------------
+    # (Your with st.container(): glass panel code stays safely right below this!)
+    
+    # ---------------------------------------------------------
+    # (Keep all your with st.container(): glass panel code below here)
+
+    # ... Your existing CSS for the Glass Panel goes here ...
 
     # 1. Inject the CSS (You can put this at the top of your app)
     st.markdown("""
