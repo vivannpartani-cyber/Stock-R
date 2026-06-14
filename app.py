@@ -89,7 +89,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- 3. Authentication Wall ---
-if not st.user.is_logged_in and not st.session_state.is_guest:
+# Check if st.user has the attribute first; if not, treat them as logged out
+is_logged_in = getattr(st.user, "is_logged_in", False)
+
+if not is_logged_in and not st.session_state.is_guest:    
     st.markdown("""
     <div style="text-align: center; margin-top: 80px; margin-bottom: 30px;">
         <h1 style="font-weight: 900; font-size: 4.5rem; letter-spacing: -1.5px; margin-bottom: 0;">
@@ -122,8 +125,10 @@ if st.session_state.is_guest:
     user_email = "Guest"
     display_name = "Guest User"
 else:
-    user_email = st.user.email
-    display_name = getattr(st.user, "name", user_email) or user_email
+    # Safely extract email and name using getattr fallbacks
+    user_email = getattr(st.user, "email", "Unknown Email")
+    user_name = getattr(st.user, "name", None)
+    display_name = user_name or user_email
 
 def log_search(ticker):
     if supabase and not st.session_state.is_guest:
