@@ -202,6 +202,14 @@ def get_stock_info(ticker):
 def get_stock_history(ticker, period, interval):
     return yf.Ticker(ticker).history(period=period, interval=interval)
 
+@st.cache_data(ttl=900, show_spinner=False)
+def get_market_data(ticker, timeframe):
+    stock = yf.Ticker(ticker)
+    info = stock.info
+    return info, hist
+
+# ... (keep your get_analysis and get_market_pulse functions here) ...
+
 @st.cache_data(ttl=3600)
 def get_analysis(ticker, timeframe, weights):
     stock = yf.Ticker(ticker)
