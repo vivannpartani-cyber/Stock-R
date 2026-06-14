@@ -507,7 +507,7 @@ elif st.session_state.page == "analysis":
     with top_cols[1]:
         st.markdown(f"<h3 style='text-align: center; margin-top: 0;'>Terminal: {ticker} ({timeframe})</h3>", unsafe_allow_html=True)
     with top_cols[2]:
-        if st.button("⭐ Save", use_container_width=True): add_favorite(ticker); st.rerun() 
+        if st.button("Favorite", use_container_width=True): add_favorite(ticker); st.rerun() 
 
     log_search(ticker)
     stock = yf.Ticker(ticker)
