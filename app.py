@@ -14,7 +14,7 @@ except ImportError:
 
 # --- 1. Page Config & State Initialization ---
 
-st.set_page_config(page_title="Stock-R", layout="wide", page_icon="logo.png") 
+st.set_page_config(page_title="Stock-R", layout="wide", page_icon="Stock-R.png") 
 
 if "page" not in st.session_state: st.session_state.page = "home"
 if "ticker" not in st.session_state: st.session_state.ticker = ""
