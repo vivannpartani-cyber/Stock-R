@@ -192,6 +192,16 @@ else:
                 st.rerun()
 
 # --- 6. Analysis Logic ---
+
+# NEW: Cache Yahoo Finance data for 15 minutes so it loads instantly on clicks
+@st.cache_data(ttl=900, show_spinner=False)
+def get_stock_info(ticker):
+    return yf.Ticker(ticker).info
+
+@st.cache_data(ttl=900, show_spinner=False)
+def get_stock_history(ticker, period, interval):
+    return yf.Ticker(ticker).history(period=period, interval=interval)
+
 @st.cache_data(ttl=3600)
 def get_analysis(ticker, timeframe, weights):
     stock = yf.Ticker(ticker)
@@ -516,8 +526,8 @@ elif st.session_state.page == "analysis":
         if st.button("Favorite", use_container_width=True): add_favorite(ticker); st.rerun() 
 
     log_search(ticker)
-    stock = yf.Ticker(ticker)
-    info = stock.info
+    # Use our new lightning-fast cached function
+    info = get_stock_info(ticker)
     
     st.markdown("---")
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
@@ -592,8 +602,8 @@ elif st.session_state.page == "analysis":
         
         period_map = {"1D": "1d", "1M": "1mo", "1Y": "1y", "2Y": "2y", "5Y": "5y", "ALL": "max"}
         interval_map = {"1D": "1m", "1M": "1h"}
-        hist = stock.history(period=period_map.get(timeframe, "1mo"), interval=interval_map.get(timeframe, "1d"))
-
+        hist = get_stock_history(ticker, period_map.get(timeframe, "1mo"), interval_map.get(timeframe, "1d"))
+        
         if not hist.empty:
             fig = go.Figure(data=[go.Candlestick(x=hist.index, open=hist['Open'], high=hist['High'], low=hist['Low'], close=hist['Close'], increasing_line_color='#10b981', decreasing_line_color='#ef4444')])
             fig.update_layout(margin=dict(l=0, r=0, t=10, b=10), height=400, template="plotly_white", xaxis_rangeslider_visible=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
