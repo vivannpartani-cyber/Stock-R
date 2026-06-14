@@ -454,6 +454,49 @@ div[data-testid="stVerticalBlock"]:has(> .element-container .glass-marker) {
 # --- 7B. VIEW: FULL SCREEN DASHBOARD ---
 # ==========================================
 elif st.session_state.page == "analysis":
+    
+    # 1. CLEAN COLUMN-SAFE GLASS CSS & BULLETPROOF CENTERING
+    st.markdown("""
+    <style>
+    /* 1. The Glass Panel */
+    div[data-testid="stVerticalBlock"]:has(> .element-container .analysis-glass) {
+        background: linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 100%);
+        backdrop-filter: blur(24px); 
+        -webkit-backdrop-filter: blur(24px);
+        border-top: 1px solid rgba(255, 255, 255, 0.8);
+        border-left: 1px solid rgba(255, 255, 255, 0.8);
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+    
+    /* 2. THE CENTERING OVERRIDE: Forces Streamlit's invisible boxes to stretch to the edges */
+    div[data-testid="stVerticalBlock"]:has(> .element-container .analysis-glass) > div.element-container {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    div[data-testid="stVerticalBlock"]:has(> .element-container .analysis-glass) .stMarkdown {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    /* 3. MISSING NEUTRAL STYLE: Adds styling for when the AI is unsure */
+    .verdict-text-NEUTRAL { 
+        color: #94a3b8 !important; /* Cool slate gray */
+        font-size: 80px !important; 
+        font-weight: 900 !important; 
+        margin: 0; padding: 0; line-height: 1; 
+        letter-spacing: -2px; 
+        text-shadow: 0 4px 12px rgba(148, 163, 184, 0.2); 
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     ticker = st.session_state.ticker
     timeframe = st.session_state.timeframe
     weights = st.session_state.ai_weights
@@ -464,7 +507,7 @@ elif st.session_state.page == "analysis":
     with top_cols[1]:
         st.markdown(f"<h3 style='text-align: center; margin-top: 0;'>Terminal: {ticker} ({timeframe})</h3>", unsafe_allow_html=True)
     with top_cols[2]:
-        if st.button("Favorite", use_container_width=True): add_favorite(ticker); st.rerun() 
+        if st.button("⭐ Save", use_container_width=True): add_favorite(ticker); st.rerun() 
 
     log_search(ticker)
     stock = yf.Ticker(ticker)
@@ -489,42 +532,68 @@ elif st.session_state.page == "analysis":
     col1, col2 = st.columns([4, 3])
     
     with col1:
-        style_class = f"verdict-text-{res.get('verdict', 'YELLOW').upper()}"
+        # Glass Panel 1: AI Conviction (MANUALLY CENTERED)
+        with st.container():
+            st.markdown("<div class='analysis-glass'></div>", unsafe_allow_html=True)
+            style_class = f"verdict-text-{res.get('verdict', 'YELLOW').upper()}"
+            
+            st.markdown(f"""
+            <div style='text-align: center; width: 100%;'>
+                <div class='bar-title'>AI Conviction</div>
+                <h1 class='{style_class}' style='margin: 10px 0px;'>{res.get('verdict', 'YELLOW')}</h1>
+                <p class='thesis-text'>{res.get('thesis', 'No thesis generated.')}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+    with col2:
+        # Glass Panel 2: Market Pulse (MANUALLY CENTERED)
+        with st.container():
+            st.markdown("<div class='analysis-glass'></div>", unsafe_allow_html=True)
+            
+            with st.spinner("Analyzing news..."): 
+                pulse_text = get_market_pulse(ticker)
+            
+            st.markdown(f"""
+            <div style='text-align: center; width: 100%;'>
+                <div class='bar-title'>Live Market Pulse</div>
+                <p style='font-size: 1.1rem; color: var(--text-color); line-height: 1.6; margin: 0;'>{pulse_text}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+    # ROW 1.5: Full-Width Options Play
+    # Glass Panel 3: Options (MANUALLY CENTERED)
+    with st.container():
+        st.markdown("<div class='analysis-glass'></div>", unsafe_allow_html=True)
+        opt_text = res.get("options_play", "Hold equity. No clear options edge detected.")
+        
         st.markdown(f"""
-        <div class='glass-panel verdict-card'>
-            <div class='bar-title'>AI Conviction</div>
-            <h1 class='{style_class}'>{res.get('verdict', 'YELLOW')}</h1>
-            <p class='thesis-text'>{res.get('thesis', 'No thesis generated.')}</p>
+        <div style='text-align: center; width: 100%;'>
+            <div class='bar-title'>Strategic Options Play</div>
+            <p style='font-size: 1.1rem; color: var(--text-color); line-height: 1.6; margin: 0;'>{opt_text}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ROW 2: Pro Candlestick Chart
+    # Glass Panel 4: Chart (MANUALLY CENTERED TITLE)
+    with st.container():
+        st.markdown("<div class='analysis-glass'></div>", unsafe_allow_html=True)
+        
+        st.markdown(f"""
+        <div style='text-align: center; width: 100%; margin-bottom: 10px;'>
+            <div class='bar-title'>Price Action & Volatility ({timeframe})</div>
         </div>
         """, unsafe_allow_html=True)
         
-    with col2:
-        st.markdown("<div class='glass-panel insight-card' style='height: 100%;'>", unsafe_allow_html=True)
-        st.markdown("<div class='bar-title'>Live Market Pulse</div>", unsafe_allow_html=True)
-        with st.spinner("Analyzing news..."): st.write(get_market_pulse(ticker))
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-    # ROW 1.5: Full-Width Options Play
-    st.markdown("<br><div class='glass-panel insight-card'>", unsafe_allow_html=True)
-    st.markdown("<div class='bar-title'>Strategic Options Play</div>", unsafe_allow_html=True)
-    opt_text = res.get("options_play", "Hold equity. No clear options edge detected.")
-    st.markdown(f"<p style='font-size: 1.1rem; color: var(--text-color); line-height: 1.6; margin: 0;'>{opt_text}</p>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+        period_map = {"1D": "1d", "1M": "1mo", "1Y": "1y", "2Y": "2y", "5Y": "5y", "ALL": "max"}
+        interval_map = {"1D": "1m", "1M": "1h"}
+        hist = stock.history(period=period_map.get(timeframe, "1mo"), interval=interval_map.get(timeframe, "1d"))
 
-    # ROW 2: Pro Candlestick Chart
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(f"<div class='bar-title'>Price Action & Volatility ({timeframe})</div>", unsafe_allow_html=True)
-    period_map = {"1D": "1d", "1M": "1mo", "1Y": "1y", "2Y": "2y", "5Y": "5y", "ALL": "max"}
-    interval_map = {"1D": "1m", "1M": "1h"}
-    hist = stock.history(period=period_map.get(timeframe, "1mo"), interval=interval_map.get(timeframe, "1d"))
-
-    if not hist.empty:
-        fig = go.Figure(data=[go.Candlestick(x=hist.index, open=hist['Open'], high=hist['High'], low=hist['Low'], close=hist['Close'], increasing_line_color='#10b981', decreasing_line_color='#ef4444')])
-        fig.update_layout(margin=dict(l=0, r=0, t=10, b=10), height=400, template="plotly_white", xaxis_rangeslider_visible=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-        st.plotly_chart(fig, use_container_width=True)
+        if not hist.empty:
+            fig = go.Figure(data=[go.Candlestick(x=hist.index, open=hist['Open'], high=hist['High'], low=hist['Low'], close=hist['Close'], increasing_line_color='#10b981', decreasing_line_color='#ef4444')])
+            fig.update_layout(margin=dict(l=0, r=0, t=10, b=10), height=400, template="plotly_white", xaxis_rangeslider_visible=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+            st.plotly_chart(fig, use_container_width=True)
 
     # ROW 3: Bull vs Bear Breakdown
-    st.markdown("<br>", unsafe_allow_html=True)
     col_bull, col_bear = st.columns(2)
     with col_bull:
         st.success("### Pros")
@@ -533,4 +602,4 @@ elif st.session_state.page == "analysis":
         st.error("### Cons")
         for point in res.get("bear_case", []): st.write(f"**✗** {point}")
 
-    st.markdown("<p class='footer-disclaimer'>Disclaimer: Stock-R is an AI-driven tool. Not financial advice.</p>", unsafe_allow_html=True)
+    st.markdown("<p class='footer-disclaimer' style='text-align: center;'>Disclaimer: Stock-R is an AI-driven tool. Not financial advice.</p>", unsafe_allow_html=True)
